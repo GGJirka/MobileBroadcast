@@ -5,13 +5,14 @@ import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
  * Created by ggjimmy on 3/23/17.
  */
 
-public class CameraView extends SurfaceView implements SurfaceHolder.Callback{
+public class CameraView extends SurfaceView implements SurfaceHolder.Callback, Camera.PictureCallback{
     private SurfaceHolder holder;
     private Camera camera;
 
@@ -52,5 +53,11 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceDestroyed(SurfaceHolder holder) {
         camera.stopPreview();
         camera.release();
+    }
+
+
+    @Override
+    public void onPictureTaken(byte[] data, Camera camera) {
+
     }
 }

@@ -6,4 +6,8 @@
         android:title="change rotation"
         android:icon="@drawable/camera_rotation"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu"
+        android:title="menu"
+        android:showAsAction="never"/>
 </menu>
