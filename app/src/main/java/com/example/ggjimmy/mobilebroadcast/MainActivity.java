@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-import com.example.ggjimmy.mobilebroadcast.FileExtension;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -39,19 +37,35 @@ public class MainActivity extends AppCompatActivity {
             case R.id.camera_rotation:
                 FrameLayout layout = (FrameLayout) findViewById(R.id.camera_view);
                 layout.removeAllViews();
+                
+                if(!state){
+                    camera = Camera.open(0);
+                }else{
+                    camera = Camera.open(1);
+                }
+
                 camera = !state ? Camera.open(0) : Camera.open(1);
+
                 state = !state ? true : false;
                 cameraView = new CameraView(this, camera);
                 layout.addView(cameraView);
                 break;
+
             case R.id.menu:
                 camera.takePicture(null, null, pictureCallback);
                 camera.release();
                 break;
+            case R.id.create_room:
+
+            default:
+                return false;
+
+
         }
         return super.onOptionsItemSelected(item);
     }
-    private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
+
+    private Camera.PictureCallback pictureCallback = new Camera.PictureCallback(){
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             try{
@@ -63,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 FileOutputStream stream = new FileOutputStream(file);
                 stream.write(data);
                 stream.close();
-
             } catch(FileNotFoundException e) {
                 e.getStackTrace();
             } catch(IOException e){

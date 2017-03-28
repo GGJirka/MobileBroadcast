@@ -10,4 +10,18 @@
         android:id="@+id/menu"
         android:title="menu"
         android:showAsAction="never"/>
+    <item
+        android:showAsAction="never"
+        android:id="@+id/capture_video"
+        android:title="capture video"/>
+
+    <item
+        android:showAsAction="never"
+        android:title="Create room"
+        android:id="@+id/create_room"/>
+
+    <item
+        android:showAsAction="never"
+        android:title="Connect"
+        android:id="@+id/Connect..."/>
 </menu>

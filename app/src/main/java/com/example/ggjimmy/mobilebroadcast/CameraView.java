@@ -5,7 +5,7 @@ import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.io.File;
+
 import java.io.IOException;
 
 /**
@@ -50,14 +50,13 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public void surfaceDestroyed(SurfaceHolder holder){
         camera.stopPreview();
         camera.release();
     }
 
-
     @Override
-    public void onPictureTaken(byte[] data, Camera camera) {
+    public void onPictureTaken(byte[] data, Camera camera){
 
     }
 }
