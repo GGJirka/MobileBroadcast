@@ -6,15 +6,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{    
+
     private Camera camera = null;
     private CameraView cameraView = null;
-    private boolean state = false;
+    private boolean state = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -23,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
         cameraView = new CameraView(this, camera);
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_view);
         layout.addView(cameraView);
+        setTitle("a2");
+
+        try {
+            Client client = new Client();
+            client.startClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -35,32 +46,20 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.camera_rotation:
-                FrameLayout layout = (FrameLayout) findViewById(R.id.camera_view);
-                layout.removeAllViews();
-                
-                if(!state){
-                    camera = Camera.open(0);
-                }else{
-                    camera = Camera.open(1);
-                }
-
-                camera = !state ? Camera.open(0) : Camera.open(1);
-
-                state = !state ? true : false;
-                cameraView = new CameraView(this, camera);
-                layout.addView(cameraView);
+                swapCamera();
                 break;
 
             case R.id.menu:
                 camera.takePicture(null, null, pictureCallback);
                 camera.release();
                 break;
+
             case R.id.create_room:
+
+                break;
 
             default:
                 return false;
-
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
                 if(file == null){
                     return;
                 }
-
                 FileOutputStream stream = new FileOutputStream(file);
                 stream.write(data);
                 stream.close();
@@ -84,4 +82,48 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void swapCamera(){
+        FrameLayout layout = (FrameLayout) findViewById(R.id.camera_view);
+        layout.removeAllViews();
+
+        camera = !state ? Camera.open(0) : Camera.open(1);
+
+        state = !state ? true : false;
+
+        cameraView = new CameraView(this, camera);
+        layout.addView(cameraView);
+    }
+
+    private class Client extends ClientData{
+
+        //this constructor is reduant, but it gives better navigation
+        public Client(){
+            super();
+        }
+
+        @Override
+        public void sendData(String message){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    swapCamera();
+                }
+            });
+            try {
+                send(message);
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void run() {
+            while(socketConnected()){
+                if(getMessage()!=null){
+                    swapCamera();
+                }
+            }
+        }
+    }
 }
