@@ -1,11 +1,18 @@
 package com.example.ggjimmy.mobilebroadcast;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,8 +23,9 @@ public class MainActivity extends AppCompatActivity{
 
     private Camera camera = null;
     private CameraView cameraView = null;
+    private Client client;
     private boolean state = true;
-
+    private TextView text;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -26,12 +34,20 @@ public class MainActivity extends AppCompatActivity{
         cameraView = new CameraView(this, camera);
         FrameLayout layout = (FrameLayout) findViewById(R.id.camera_view);
         layout.addView(cameraView);
-        setTitle("a2");
+        text = (TextView) findViewById(R.id.text);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(0, mBuilder.build());
 
         try {
-            Client client = new Client();
+            client = new Client();
             client.startClient();
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -55,7 +71,7 @@ public class MainActivity extends AppCompatActivity{
                 break;
 
             case R.id.create_room:
-
+                client.sendData("CREATEROOM "+"testing");
                 break;
 
             default:
@@ -97,32 +113,16 @@ public class MainActivity extends AppCompatActivity{
 
     private class Client extends ClientData{
 
-        //this constructor is reduant, but it gives better navigation
         public Client(){
-            super();
+            super(text);
         }
 
         @Override
         public void sendData(String message){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    swapCamera();
-                }
-            });
             try {
                 send(message);
             }catch(IOException e){
                 e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void run() {
-            while(socketConnected()){
-                if(getMessage()!=null){
-                    swapCamera();
-                }
             }
         }
     }

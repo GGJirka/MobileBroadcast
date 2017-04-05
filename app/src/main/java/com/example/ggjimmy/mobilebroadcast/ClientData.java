@@ -1,4 +1,7 @@
 package com.example.ggjimmy.mobilebroadcast;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -11,7 +14,7 @@ import java.net.Socket;
  * Created by ggjimmy on 3/31/17.
  */
 
-public abstract class ClientData implements Runnable{
+public abstract class ClientData extends AppCompatActivity{
     /*
     * Abstract class for client for easier code looking
     * This class helps main clients with optimalizing
@@ -22,11 +25,13 @@ public abstract class ClientData implements Runnable{
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
-
+    private TextView view;
     /*
     * Creates socket, must be run on new thread on androids
     * */
-
+    public ClientData(TextView view){
+        this.view = view;
+    }
     public void startClient() throws Exception{
         new Thread(new SocketCreate()).start();
         //new Thread(this).start();
@@ -37,24 +42,28 @@ public abstract class ClientData implements Runnable{
     * */
     private class SocketCreate implements Runnable{
         @Override
-        public void run() {
+        public void run(){
             try {
                 socket = new Socket(InetAddress.getByName(SERVER_IP), SERVER_PORT);
                 bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                send("new message insert");
+                while(socketConnected()) {
+                    final String message = bufferedReader.readLine();
+                    if (message != null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                view.setText(message);
+                            }
+                        });
+                    }
+                }
             }catch(Exception e){
                 e.printStackTrace();
             }
         }
     }
 
-    /*
-    * reading thread from server
-    */
-
-    @Override
-    public abstract void run();
 
     /*
     * send data to server
