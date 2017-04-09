@@ -44,13 +44,15 @@ public abstract class ClientData extends AppCompatActivity{
         @Override
         public void run(){
             try {
+                /*
+                * main reading thread that listenes to server*/
                 socket = new Socket(InetAddress.getByName(SERVER_IP), SERVER_PORT);
                 bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 while(socketConnected()) {
                     final String message = bufferedReader.readLine();
                     if (message != null) {
-                        runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable(){
                             @Override
                             public void run() {
                                 view.setText(message);
