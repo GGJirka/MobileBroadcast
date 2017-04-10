@@ -42,13 +42,6 @@ public class MainActivity extends AppCompatActivity{
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, mBuilder.build());
 
-        try {
-            client = new Client();
-            client.startClient();
-            client.sendData("USERCONNECT "+"connect");
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -70,9 +63,20 @@ public class MainActivity extends AppCompatActivity{
                 break;
 
             case R.id.create_room:
-                client.sendData("CREATEROOM "+"testing");
+                try{
+                    new ServerData(text);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 break;
-
+            case R.id.connect:
+                try {
+                    client = new Client();
+                    client.startClient();
+                    client.send("USERCONNECT "+"connect");
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
             default:
                 return false;
         }
@@ -125,4 +129,5 @@ public class MainActivity extends AppCompatActivity{
             }
         }
     }
+
 }

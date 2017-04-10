@@ -20,7 +20,7 @@ public abstract class ClientData extends AppCompatActivity{
     * This class helps main clients with optimalizing
     *
     * */
-    private final String SERVER_IP = "192.168.1.101";
+    private final String SERVER_IP = "10.42.0.120";
     private final int SERVER_PORT  =            4758;
     private Socket socket;
     private BufferedWriter bufferedWriter;
@@ -32,6 +32,7 @@ public abstract class ClientData extends AppCompatActivity{
     public ClientData(TextView view){
         this.view = view;
     }
+
     public void startClient() throws Exception{
         new Thread(new SocketCreate()).start();
         //new Thread(this).start();
@@ -49,7 +50,9 @@ public abstract class ClientData extends AppCompatActivity{
                 socket = new Socket(InetAddress.getByName(SERVER_IP), SERVER_PORT);
                 bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                while(socketConnected()) {
+                send("ROOMCONNECT");
+
+                while(socketConnected()){
                     final String message = bufferedReader.readLine();
                     if (message != null) {
                         runOnUiThread(new Runnable(){

@@ -23,5 +23,5 @@
     <item
         android:showAsAction="never"
         android:title="Connect"
-        android:id="@+id/Connect..."/>
+        android:id="@+id/connect"/>
 </menu>
