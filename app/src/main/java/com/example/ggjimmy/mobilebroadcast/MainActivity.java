@@ -4,10 +4,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -29,12 +31,24 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         camera = Camera.open(0);
-        cameraView = new CameraView(this, camera);
-        FrameLayout layout = (FrameLayout) findViewById(R.id.camera_view);
-        layout.addView(cameraView);
         text = (TextView) findViewById(R.id.text);
+        cameraView = new CameraView(this, camera, text);
+
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                cameraView.openMediaRecorder();
+            }
+        }, 1500);
+
+
+        FrameLayout layout = (FrameLayout)findViewById(R.id.camera_view);
+        layout.addView(cameraView);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
+
                         .setContentTitle("My notification")
                         .setContentText("Hello World!");
 
@@ -64,12 +78,13 @@ public class MainActivity extends AppCompatActivity{
 
             case R.id.create_room:
                 try{
-                    new ServerData(text);
+                    new ServerData(camera,cameraView,text);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
                 break;
             case R.id.connect:
+                cameraView.startMediaRecorder();
                 try {
                     client = new Client();
                     client.startClient();
@@ -110,7 +125,7 @@ public class MainActivity extends AppCompatActivity{
 
         state = !state ? true : false;
 
-        cameraView = new CameraView(this, camera);
+        cameraView = new CameraView(this, camera, text);
         layout.addView(cameraView);
     }
 

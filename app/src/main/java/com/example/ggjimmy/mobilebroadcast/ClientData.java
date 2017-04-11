@@ -1,4 +1,6 @@
 package com.example.ggjimmy.mobilebroadcast;
+import android.media.MediaPlayer;
+import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
@@ -26,6 +28,7 @@ public abstract class ClientData extends AppCompatActivity{
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
     private TextView view;
+    private MediaPlayer mMediaPlayer;
     /*
     * Creates socket, must be run on new thread on androids
     * */
@@ -51,6 +54,12 @@ public abstract class ClientData extends AppCompatActivity{
                 bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 send("ROOMCONNECT");
+
+                ParcelFileDescriptor pfd = ParcelFileDescriptor.fromSocket(socket);
+                mMediaPlayer = new MediaPlayer();
+                mMediaPlayer.setDataSource(pfd.getFileDescriptor());
+                mMediaPlayer.prepare();
+                mMediaPlayer.start();
 
                 while(socketConnected()){
                     final String message = bufferedReader.readLine();
